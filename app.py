@@ -50,16 +50,20 @@ def send_sms(recipient: str, message: str) -> str:
         application_secret=os.environ["OVH_APPLICATION_SECRET"],
         consumer_key=os.environ["OVH_CONSUMER_KEY"],
     )
-    service = os.getenv("OVH_SMS_SERVICE") or client.get("/sms/")[0]  # key is granted "/sms/", not "/sms"
     body = {"message": message, "receivers": [number], "noStopClause": True}
     if sender := os.getenv("OVH_SMS_SENDER"):
         body["sender"] = sender
     else:
         body["senderForResponse"] = True
-    result = client.post(f"/sms/{service}/jobs", **body)
-    if result.get("invalidReceivers"):
-        return f"OVH odrzucil numer {number}: {result}"
-    return f"Wyslano SMS do {recipient} ({number}). Zuzyte kredyty: {result.get('totalCreditsRemoved')}"
+    try:
+        service = os.getenv("OVH_SMS_SERVICE") or client.get("/sms/")[0]  # key is granted "/sms/", not "/sms"
+        result = client.post(f"/sms/{service}/jobs", **body)
+    except ovh.exceptions.APIError as e:
+        # e.g. no credits left, bad key, invalid sender - pass OVH's message to the chat as-is
+        return f"SMS NIE zostal wyslany. Blad OVH ({type(e).__name__}): {e}"
+    if result.get("invalidReceivers") or not result.get("validReceivers"):
+        return f"SMS NIE zostal wyslany do {number}. Odpowiedz OVH: {result}"
+    return f"Wyslano SMS do {recipient} ({number}). Odpowiedz OVH: {result}"
 
 
 if __name__ == "__main__":
