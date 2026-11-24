@@ -8,6 +8,7 @@ from mcp.server.mcpserver import MCPServer
 load_dotenv(os.path.join(os.path.dirname(os.path.abspath(__file__)), ".env"))
 
 mcp = MCPServer("sms")
+SENDER = "PROGRESJA"  # the only sender registered in OVH
 
 
 def contacts() -> dict[str, str]:
@@ -50,11 +51,7 @@ def send_sms(recipient: str, message: str) -> str:
         application_secret=os.environ["OVH_APPLICATION_SECRET"],
         consumer_key=os.environ["OVH_CONSUMER_KEY"],
     )
-    body = {"message": message, "receivers": [number], "noStopClause": True}
-    if sender := os.getenv("OVH_SMS_SENDER"):
-        body["sender"] = sender
-    else:
-        body["senderForResponse"] = True
+    body = {"message": message, "receivers": [number], "noStopClause": True, "sender": SENDER}
     try:
         service = os.getenv("OVH_SMS_SERVICE") or client.get("/sms/")[0]  # key is granted "/sms/", not "/sms"
         result = client.post(f"/sms/{service}/jobs", **body)

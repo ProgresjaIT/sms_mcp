@@ -1,6 +1,6 @@
 # sms_mcp
 
-Serwer MCP do wysyłania SMS-ów przez API OVH. Odbiorcę podajesz numerem albo nazwą z listy kontaktów, np. „wyślij sms do marcin: jestem za 10 min”.
+Serwer MCP do wysyłania SMS-ów przez API OVH (nadawca: `PROGRESJA`). Odbiorcę podajesz numerem albo nazwą z listy kontaktów, np. „wyślij sms do marcin: jestem za 10 min”.
 
 ## Narzędzia
 
@@ -27,7 +27,6 @@ Dla instalatora:
 | `CONTACTS` | nie | Lista kontaktów `nazwa:numer` po przecinku, np. `marcin:+48123456789,ania:500600700` |
 | `OVH_ENDPOINT` | nie | Region API OVH, domyślnie `ovh-eu` |
 | `OVH_SMS_SERVICE` | nie | Nazwa konta SMS (np. `sms-ab12345-1`). Puste: pierwsze konto z listy |
-| `OVH_SMS_SENDER` | nie | Nadawca zarejestrowany w panelu OVH. Puste: krótki numer OVH, odbiorca może odpisać |
 
 **Pod mcp_loader nie ustawiaj `MCP_TRANSPORT`, `MCP_HOST` ani `MCP_PORT`.** Serwer musi działać w stdio. Inny transport zajmie port 8000 i `mcp-proxy` nie wystartuje.
 
